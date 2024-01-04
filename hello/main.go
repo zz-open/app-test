@@ -100,6 +100,8 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	time.Sleep(time.Second * 2)
+
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(jsonData)
 	if err != nil {
