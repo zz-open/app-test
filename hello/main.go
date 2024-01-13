@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -39,6 +40,7 @@ func main() {
 
 	http.HandleFunc("/info", InfoHandler)
 	http.HandleFunc("/health", HealthHandler)
+	http.HandleFunc("/log", LogHandler)
 
 	addr := fmt.Sprintf(":%d", config.Port)
 	server := &http.Server{Addr: addr, Handler: nil}
@@ -93,7 +95,7 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
-		"msg": fmt.Sprintf("%s %s", getServiceMsg(), "I am Health. v1"),
+		"msg": fmt.Sprintf("%s %s", getServiceMsg(), "I am Health"),
 	}
 
 	log.Println("health Req Host:", r.Host)
@@ -112,6 +114,71 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func RandomString(n int) string {
+	const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	bytes := make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = letters[b%byte(len(letters))]
+	}
+	return string(bytes)
+}
+
+func LogHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Log Req Host:", r.Host)
+
+	infoMap := map[string]any{
+		"time": time.Now().Format(time.DateTime),
+		"msg":  RandomString(10),
+	}
+
+	logData, err := json.Marshal(infoMap)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_ = _log(logData)
+
+	data := map[string]any{
+		"msg": fmt.Sprintf("%s %s", getServiceMsg(), "Log成功写入"),
+	}
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(jsonData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func _log(content []byte) error {
+	if len(content) == 0 {
+		return nil
+	}
+
+	fileName := "hello.log" + time.Now().Format(time.DateOnly)
+	file, err := os.OpenFile("./"+fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	_, err = file.Write(content)
+	if err != nil {
+		return err
+	}
+
+	_, _ = file.WriteString("\n")
+	return nil
 }
 
 func getServiceMsg() string {
