@@ -75,6 +75,8 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 		"msg": fmt.Sprintf("%s %s", getServiceMsg(), "info接口"),
 	}
 
+	log.Println("Info Req Host:", r.Host)
+
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -93,6 +95,8 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"msg": fmt.Sprintf("%s %s", getServiceMsg(), "I am Health. v1"),
 	}
+
+	log.Println("health Req Host:", r.Host)
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {

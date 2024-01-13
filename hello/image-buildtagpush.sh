@@ -6,7 +6,9 @@ HOST_CODE_PATH=./
 HOST_CODE_CONF_PATH=./config.yaml
 
 IMAGE_NAME=zz-hello
-IMAGE_TAG=v3.0.0
+
+# 修改版本即可
+IMAGE_TAG=v1.0.0
 
 builTagPushHarbor(){
     local SERVER=zz.harbor.com/zzimage
@@ -15,7 +17,7 @@ builTagPushHarbor(){
 
     echo '123456' | docker login -u admin --password-stdin ${SERVER} && \
     sed -i "s/version:.*/version: \"${IMAGE_TAG}\"/g" ${HOST_CODE_CONF_PATH} && \
-    docker build -t ${SOURCE_IMAGE} . && \
+    docker build --no-cache -t ${SOURCE_IMAGE} . && \
     docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE} && \
     docker push ${TARGET_IMAGE}
 }
@@ -30,7 +32,7 @@ builTagPushAli(){
     # 使用前记得先登录
     # echo 'xxx' | docker login -u xxx --password-stdin registry.cn-hangzhou.aliyuncs.com && \
     sed -i "s/version:.*/version: \"${IMAGE_TAG}\"/g" ${HOST_CODE_CONF_PATH} && \
-    docker build -t ${SOURCE_IMAGE} . && \
+    docker build --no-cache -t ${SOURCE_IMAGE} . && \
     docker tag ${SOURCE_IMAGE} ${TARGET_IMAGE} && \
     docker push ${TARGET_IMAGE}
 }

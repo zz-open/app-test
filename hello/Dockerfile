@@ -30,9 +30,13 @@ COPY --from=builder /build/${APPLICATION_BIN_NAME} /dist/
 COPY --from=builder /build/${APPLICATION_CONF_NAME} /dist/
 LABEL app_version="${APPLICATION_VERSION}"
 
-ARG TZ
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+ARG TZ=Asia/Shanghai
 ENV TZ ${TZ}
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apk update && apk add alpine-conf && \ 
+    /sbin/setup-timezone -z ${TZ} && \
+    apk del alpine-conf
 
 WORKDIR /dist
 ENTRYPOINT ["./main"]
