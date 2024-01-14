@@ -8,7 +8,7 @@ HOST_CODE_CONF_PATH=./config.yaml
 IMAGE_NAME=zz-hello
 
 # 修改版本即可
-IMAGE_TAG=v1.0.0
+IMAGE_TAG=v3.0.0
 
 builTagPushHarbor(){
     local SERVER=zz.harbor.com/zzimage

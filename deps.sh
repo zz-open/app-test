@@ -12,25 +12,13 @@ installProtoc(){
     unzip -d /tmp/protoc ${repositoryPath}/protoc-3.19.1-linux-x86_64.zip  && \
               mv /tmp/protoc/bin/protoc $GOPATH/bin
   fi
-}
 
-goGet(){
-  # 安装 grpc-go
+   # 安装 grpc-go
   go get -u google.golang.org/grpc
   # 安装 protobuf
   go get -u github.com/golang/protobuf
   # 安装 protoc-gen-go
   #go get -u github.com/golang/protobuf/protoc-gen-go@v1.4.0
-  # 安装dtm依赖
-  # go get -u github.com/dtm-labs/dtm
-  go get -u github.com/dtm-labs/dtmcli
-  # 安装 gin
-  go get -u github.com/gin-gonic/gin
 }
 
-install() {
-    installProtoc
-    goGet
-}
-
-install
+installProtoc
